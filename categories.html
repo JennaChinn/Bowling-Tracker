@@ -1,0 +1,76 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <link id="style" rel="stylesheet" href="style.css">
+        <script>
+            window.onload=()=> {
+                let cats=JSON.parse(localStorage.getItem("cats"));
+                let table=document.getElementById("table");
+                
+                let c=table.insertRow().insertCell();
+                c.innerHTML="Category";
+                c.style.cssText="font-weight:bold;";
+                
+                for (let i=0; i<cats.length; i++) {
+                    let r=table.insertRow();
+                    r.insertCell().innerHTML=cats[i];
+                    c=r.insertCell();
+                    let box=document.createElement("input");
+                    box.type="checkbox";
+                    c.appendChild(box);
+                }
+            }
+            
+            const add=()=> {
+                let str="", valid=false, cats=JSON.parse(localStorage.getItem("cats"));
+                if (cats.length>7) {
+                    alert("You have the maximum amount of categories.");
+                    return;
+                }
+                while (!valid) {
+                    if (str.length<1) str=prompt("Enter the name of the new category.");
+                    else if (str.length>17) str=prompt("That's too long. Enter a shorter name.");
+                    if (ins(cats,str)) str=prompt("That category already exists. Enter another name.");
+                    if ((str.length>0 && str.length<18 && !ins(cats,str)) || (!str && str!="")) valid=true;
+                }
+                if (!str) return;
+                cats.push(str);
+                localStorage.setItem("cats",JSON.stringify(cats));
+                location.reload();
+            }
+            
+            
+            const delSel=()=> {
+                let conf=window.confirm("Are you sure you want to delete these categories? This action cannot be undone.");
+                if (!conf) return;
+                let objs=JSON.parse(localStorage.getItem("objs"));
+                let table=document.getElementById("table");
+                let arr=[];
+                for (let i=1; i<table.rows.length; i++) {
+                    if (table.rows[i].cells[1].firstChild.checked) arr.push(i-1);
+                }
+                let cats=JSON.parse(localStorage.getItem("cats"));
+                let newArr=[];
+                for (let i=0; i<cats.length; i++) {
+                    if (!ins(arr,i)) newArr.push(cats[i]);
+                    else objs.forEach((x)=>{if (x.cat==cats[i]) x.cat="None";});
+                }
+                localStorage.setItem("objs",JSON.stringify(objs));
+                localStorage.setItem("cats",JSON.stringify(newArr));
+                location.reload();
+            }
+            
+            const ins=(cats,str)=>{
+                return !cats.every((x)=>x!=str);
+            }
+        </script>
+    </head>
+    <body>
+        <h1>Category Settings</h1>
+        <table id="table">
+        </table>
+        <button onclick="add()">Add Category</button>
+        <button onclick="delSel()">Delete Selected</button>
+        <button onclick="window.location.href='./settings.html'">Back</button>
+    </body>
+</html>

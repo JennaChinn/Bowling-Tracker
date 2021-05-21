@@ -1,0 +1,63 @@
+html {
+    font-family: cursive;
+    color: #EEEEEE;
+    background-color: #ffc0d6;
+    margin: auto;
+    text-align: center;
+    -webkit-text-stroke: 1px #777777;
+}
+p, button, input, td, th {
+    -webkit-text-stroke: 0;
+    color: #FFFFFF;
+}
+table, td, th {
+    margin: auto;
+    border: 1px solid #777777;
+    border-radius: 3px;
+}
+button, input[type=button] {
+    border-radius: 10px;
+    background-color: #EEEEEE;
+    font-family: cursive;
+    color: #777777;
+    border: 1px #777777;
+}
+input[type=text] {
+    background-color: #ffc0d6;
+    color: #FFFFFF;
+    border: 0;
+    font-family: cursive;
+}
+input[type=number] {
+    background-color: #ffc0d6;
+    color: #FFFFFF;
+    border: 1 #777777;
+    border-radius: 10px;
+    font-family: cursive;
+}
+button, .b {
+    display: block;
+    margin: auto;
+    margin-top: 10px;
+}
+.set {
+    display: block;
+    margin-left: 0;
+}
+label, h6 {
+    -webkit-text-stroke: 0;
+    color: #777777;
+}
+canvas {
+    border: 1px solid #777777;
+}
+select {
+    -webkit-text-stroke: 0;
+    color: #777777;
+    font-family: cursive;
+    border-radius: 10px;
+    background-color: #ffc0d6;
+    display: inline-block;
+    margin: auto;
+    margin-top: 10px;
+}

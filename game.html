@@ -1,0 +1,66 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <link rel="stylesheet" href="style.css" id="sty">
+        <script>
+            window.onload=()=>{
+                let menu=document.getElementById("menu");
+                let cats=JSON.parse(localStorage.getItem("cats"));
+                cats.forEach((x)=> {
+                    let a=document.createElement("option");
+                    a.value=x;
+                    a.innerHTML=x;
+                    menu.appendChild(a);
+                });
+            }
+            const save=()=> {
+                let date = new Date();
+                let x=Number(document.getElementById("inp").value);
+                if (x>300 || x<0) {
+                    alert("Invalid score");
+                    location.reload();
+                    return;
+                }
+                let menu=document.getElementById("menu");
+                let obj={
+                    score:x,
+                    date:`${date.getMonth()+1}/${date.getDate()}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`,
+                    full: false,
+                    cat: menu.value
+                }
+                let objs=JSON.parse(localStorage.getItem("objs"));
+                if (objs.length>=150) {
+                    alert("Max games exceeded. Delete older games in order to make space.");
+                    return;
+                }
+                objs.push(obj);
+                if (obj.length==150) alert("Max games reached");
+                localStorage.setItem("objs",JSON.stringify(objs));
+                alert("Score saved!");
+                
+                let avgTot=0;
+                for (let i=0; i<objs.length; i++) avgTot+=objs[i].score;
+                avgTot=Math.round((avgTot/objs.length)*100)/100;
+                let avgArr=JSON.parse(localStorage.getItem("avgs"));
+                avgArr.push(avgTot);
+                if (avgArr.length>150) avgArr.splice(0,1);
+                
+                localStorage.setItem("avgs",JSON.stringify(avgArr));
+                
+                location.reload();
+            }
+        </script>
+    </head>
+    <body>
+        <h1>Enter a Score</h1>
+        <p>Enter an individual score:</p>
+        <input type="number" min="0" max="300" id="inp"><br>
+        <label for="menu">Category</label>
+        <select name="menu" id="menu">
+            <option value="None">None</option>
+        </select>
+        <button onclick='save()' id="save">Save</button>
+        <button onclick="window.location.href='./entering.html';">Enter a full game</button>
+        <button onclick="window.location.href='./index.html';">Back</button>
+    </body>
+</html>

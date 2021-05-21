@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Stats</title>
+  <link rel="stylesheet" href="style.css" id="sty">
+  <script>
+      window.onload=function() {
+          let obj=JSON.parse(localStorage.getItem("objs"));
+          let sets=JSON.parse(localStorage.getItem("sets"));
+          if (obj.length==0) {
+              document.getElementById("firstBall").style.cssText="color:#ff6e64;";
+              document.getElementById("firstBall").innerHTML="No scores recorded.";
+              document.getElementById("canvas").style.display="none";
+              document.getElementById("label").style.display="none";
+              return;
+          }//if no scores
+          let strikes=0;
+          let spares=0;
+          let firstBall=0;
+          let extras=0;
+          let score=0;
+          let high=0;
+          let amt=0;
+          let f=false;
+          for (let i=0; i<obj.length; i++) {
+              let x=obj[i];
+              if (x.full) {
+                  f=true;
+                  strikes+=x.strikes;
+                  spares+=x.spares;
+                  extras+=x.more;
+                  firstBall+=x.firstBall;
+                  amt++;
+              }
+              score+=x.score;
+              high=Math.max(high,x.score);
+          }//for i
+          if (amt>0) {
+            if (sets["strike"] && f) document.getElementById("strike").innerHTML=`Average strikes: ${Math.round(strikes*100/amt)/100}`;
+            if (sets["spare"] && f) document.getElementById("spare").innerHTML=`Average spares: ${Math.round(spares*100/amt)/100}`;
+            if (sets["firstBall"] && f) document.getElementById("firstBall").innerHTML=`Average first ball: ${firstBall/(amt+extras/10)}`;
+          }
+          if (sets["score"]) document.getElementById("score").innerHTML=`Average score: ${Math.round(score*100/obj.length)/100}`;
+          document.getElementById("high").innerHTML=`High game: ${high}`;
+          
+          let avgs=JSON.parse(localStorage.getItem("avgs"));
+          let canvas=document.getElementById("canvas");
+          let ctx=canvas.getContext("2d");
+          if (avgs.length<3 || !sets["graph"]) {
+              canvas.style.cssText="display:none;";
+              document.getElementById("label").style.cssText="display:none;";
+              ctx.font = "30px Arial";
+              ctx.fillStyle = "white";
+              ctx.textAlign = "center"
+              ctx.fillText("Not enough data",canvas.width/2, canvas.height/2);
+          }
+          else {
+            let len=300/(avgs.length-1);
+            ctx.strokeStyle=JSON.parse(localStorage.getItem("dark")) ? "#EEEEEE":"#777777";
+            ctx.lineCap="square";
+            ctx.moveTo(0,300-avgs[0]);
+            for (let i=1; i<avgs.length; i++) {
+                ctx.lineTo(i*len, 300-avgs[i]);
+                ctx.stroke();
+            }
+          }
+          
+        let cats=JSON.parse(localStorage.getItem("cats"));
+        let menu=document.getElementById("menu");
+        cats.forEach((x)=>{
+           let o=document.createElement("option");
+           o.innerHTML=x;
+           menu.appendChild(o);
+        });
+            
+        filt();
+      }//onload
+      
+      var current="";
+        const filt=()=> {
+          try {
+            let val=document.getElementById("menu").value;
+            let arr=JSON.parse(localStorage.getItem("objs"));
+            if (val!="All") {
+                let newArr=[];
+                arr.forEach((x)=>{if (x.cat==val) newArr.push(x);});
+                arr=newArr;
+                canvas.style.display="none";
+                document.getElementById("label").style.display="none";
+            }
+            else canvas.style.display="inline";
+            if (current!=val) st(arr);
+            current=val;
+            let t=setTimeout(()=>filt(),500);} catch (err) {alert(err);}
+        }
+        
+        const st=(obj)=>{
+            if (obj.length==0) {
+              alert("No games in that category!");
+              document.getElementById("menu").value = "All";
+              return;
+            }
+            let keys = Object.keys(obj);
+            let tots = {
+              strike:0,
+              spare:0,
+              firstBall:0,
+              score:0,
+              high:0,
+              extras:0,
+              full:0,
+            };
+            for (let i=0; i<keys.length; i++) {
+              if (obj[i].full) {
+                tots.strike+=obj[i].strikes;
+                tots.spare+=obj[i].spares;
+                tots.firstBall += obj[i].firstBall;
+                tots.extras+=obj[i].more;
+                tots.full++;
+              }
+              tots.score+=obj[i].score;
+              tots.high = Math.max(tots.high,obj[i].score);
+            }
+            if (tots.full>0) {
+              document.getElementById("strike").innerHTML = `Average strikes: ${Math.round(100*tots.strike/tots.full)/100}`;
+              document.getElementById("spare").innerHTML = `Average spares: ${Math.round(100*tots.spare/tots.full)/100}`;
+              document.getElementById("firstBall").innerHTML = `Average first ball: ${Math.round(100*tots.firstBall/(tots.full+tots.extras/10))/100}`;
+            }
+            document.getElementById("score").innerHTML = `Average score: ${Math.round(100*tots.score/keys.length)/100}`;
+            document.getElementById("high").innerHTML = `High game: ${tots.high}`;
+        }
+  </script>
+</head>
+<body>
+  <h1>Stats</h1>
+  <p id="strike"></p>
+  <p id="spare"></p>
+  <p id="firstBall"></p>
+  <p id="score"></p>
+  <p id="high"></p>
+  <h6 id="label">Change in average over time</h6>
+  <canvas name="canvas" id="canvas" height="300" width="300"></canvas><br>
+  <label for="menu">Show</label>
+  <select name="menu" id="menu">
+      <option>All</option>
+  </select>
+  <button onclick="window.location.href='./index.html';">Back</button>
+</body>
+</html>
+

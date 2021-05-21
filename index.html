@@ -1,0 +1,30 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Opening</title>
+    <link rel="stylesheet" href="style.css" id="sty">
+    <script>
+        window.onload=function() {
+            if (!localStorage.getItem("objs")) localStorage.setItem("objs",JSON.stringify([]));
+            if (!localStorage.getItem("sets")) localStorage.setItem("sets",JSON.stringify({
+                "strike":true,
+                "spare":true,
+                "firstBall":true,
+                "score":true,
+                "graph":true
+            }));
+            if (!localStorage.getItem("avgs")) localStorage.setItem("avgs",JSON.stringify([]));
+            if (!localStorage.getItem("mode")) localStorage.setItem("mode",JSON.stringify(false));
+            if (!localStorage.getItem("cats")) localStorage.setItem("cats",JSON.stringify([]));
+        }//onload
+    </script>
+</head>
+<body>
+    <button onclick="window.location.href='./settings.html'" class="set">Settings</button>
+  <h1>Score Tracker</h1>
+  <button onclick="window.location.href='./entering.html';">Enter Game</button>
+  <button onclick="window.location.href='./game.html';">Enter Score</button>
+  <button onclick="window.location.href='./stats.html';">Stats</button>
+  <button onclick="window.location.href='./games.html';">Edit Games</button>
+</body>
+</html>

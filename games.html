@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Edit Games</title>
+  <link rel="stylesheet" href="style.css" id="sty">
+  <script>
+    window.onload=()=> {
+        let obj=JSON.parse(localStorage.getItem("objs"));
+        document.getElementById("amt").innerHTML=`${obj.length}/150 games recorded`;
+        if (obj.length==0) document.getElementById("empty").style.cssText="display:block";
+
+        let cats=JSON.parse(localStorage.getItem("cats"));
+        let menu=document.getElementById("menu");
+        cats.forEach((x)=>{
+           let o=document.createElement("option");
+           o.innerHTML=x;
+           menu.appendChild(o);
+        });
+        
+        filt();
+    }
+    
+    var current="";
+    
+    const filt=()=> {
+        let val=document.getElementById("menu").value;
+        let arr=JSON.parse(localStorage.getItem("objs"));
+        if (val!="All") {
+            let newArr=[];
+            arr.forEach((x)=>{if (x.cat==val) newArr.push(x);});
+            arr=newArr;
+        }
+        if (current!=val) tab(arr);
+        current=val;
+        let t=setTimeout(()=>filt(),500);
+    }
+  
+    const tab=(obj)=> {
+        let table=document.createElement("table");
+        let r1=table.insertRow(0);
+        r1.insertCell(0).innerHTML="Date";
+        r1.insertCell(1).innerHTML="Score";
+        r1.insertCell(2).innerHTML="Category";
+        r1.style.cssText="font-weight:bold;";
+        let max=0;
+        for (let i=0; i<obj.length; i++) {
+            let row=table.insertRow(i+1);
+            row.insertCell(0).innerHTML=obj[i].date;
+            row.insertCell(1).innerHTML=obj[i].score;
+            let newR=row.insertCell(2);
+            if (obj[i].cat) newR.innerHTML=obj[i].cat;
+            let box=document.createElement("input");
+            box.type="checkbox";
+            row.insertCell(3).appendChild(box);
+            if (obj[i].score>obj[max].score) max=i;
+        }//for i
+        table.rows[max+1].cells[1].style.cssText="color:red;";
+        document.getElementById("table").remove();
+        table.id="table";
+        document.getElementById("t").appendChild(table);
+    }//function
+    
+    const erase=()=> {
+        let confirm=window.confirm("Are you sure you want to delete all of your games?");
+        if (confirm) {
+            localStorage.setItem("objs",JSON.stringify([]));
+            localStorage.setItem("avgs",JSON.stringify([]));
+            location.reload();
+        }//delete
+    }//erase
+    
+    const delSel=()=> {
+        let conf=window.confirm("Are you sure you want to delete these games? This action cannot be undone.");
+        let objs = JSON.parse(localStorage.getItem("objs"));
+        if (!conf) return;
+        let table=document.getElementById("table");
+        let arr=[];
+        for (let i=1; i<table.rows.length; i++) {
+            if (table.rows[i].cells[3].firstChild.checked) arr.push(i-1);
+        }
+        let off=0;
+        try {
+        arr.forEach((x)=>{
+          objs.splice(x-off, 1);
+          off++;
+        });
+        localStorage.setItem("objs",JSON.stringify(objs));} catch (err) {alert(err)};
+        location.reload();
+    }
+    
+
+  </script>
+</head>
+<body>
+  <h1>Games</h1>
+  <p id="amt"></p>
+  <div id="t"><table id="table"></table></div>
+  <p id="empty" style="display:none">No scores recorded</p>
+  <label for="menu">Show </label>
+  <select name="menu" id="menu">
+      <option>All</option>
+  </select>
+  <button onclick="erase()">Erase All</button>
+  <button onclick="delSel()">Delete Selected</button>
+  <button onclick="window.location.href='./index.html';">Back</button>
+</body>
+</html>
+

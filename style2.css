@@ -1,0 +1,64 @@
+html {
+    font-family: cursive;
+    color: #2e2e2e;
+    background-color: #2e2e2e;
+    margin: auto;
+    text-align: center;
+    -webkit-text-stroke: 1px #eeeeee;
+}
+p, button, input, td, th {
+    -webkit-text-stroke: 0;
+    color: #eeeeee;
+}
+table, td, th {
+    margin: auto;
+    border: 1px solid #eeeeee;
+    border-radius: 3px;
+}
+button, input[type=button] {
+    border-radius: 10px;
+    background-color: #eeeeee;
+    font-family: cursive;
+    color: #2e2e2e;
+    border: 1px #2e2e2e;
+}
+input[type=text] {
+    background-color: #2e2e2e;
+    color: #eeeeee;
+    border: 0;
+    font-family: cursive;
+}
+input[type=number] {
+    background-color: #2e2e2e;
+    color: #FFFFFF;
+    border: 1 #eeeeee;
+    border-radius: 10px;
+    font-family: cursive;
+}
+button, .b {
+    display: block;
+    margin: auto;
+    margin-top: 10px;
+}
+.set {
+    display: block;
+    margin-left: 0;
+}
+label, h6 {
+    -webkit-text-stroke: 0;
+    color: #eeeeee;
+}
+canvas {
+    border: 1px solid #777777;
+}
+h3 {
+    -webkit-text-stroke: 0;
+    color: #eeeeee;
+}
+select {
+    -webkit-text-stroke: 0;
+    color: #eeeeee;
+    font-family: cursive;
+    border-radius: 10px;
+    background-color: #2e2e2e;
+}

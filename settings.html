@@ -1,0 +1,62 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <link rel="stylesheet" href="style.css" id="sty">
+        <script>
+            window.onload=()=> {
+                let sets=JSON.parse(localStorage.getItem("sets"));
+                let keys=Object.keys(sets); //strike,spare,firstBall,score
+                let names=["Strikes", "Spares", "First Ball", "Score", "Average Graph"];
+                for (let i=0; i<keys.length; i++) {
+                    let elem=document.createElement("input");
+                    elem.type="checkbox";
+                    elem.name=names[i];
+                    elem.checked=sets[keys[i]];
+                    let lab=document.createElement("label");
+                    lab.for=names[i];
+                    lab.innerHTML=names[i];
+                    document.getElementById("stats").appendChild(elem);
+                    document.getElementById("stats").appendChild(lab);
+                    document.getElementById("stats").appendChild(document.createElement("br"));
+                }
+                //document.getElementById("dark").checked=JSON.parse(localStorage.getItem("dark"));
+            }
+            
+            const save=()=> {
+                let stats=document.getElementById("stats").children;
+                let sets=JSON.parse(localStorage.getItem("sets"));
+                let keys=Object.keys(sets);
+                for (let i=0; i<15; i+=3) {
+                    sets[keys[i/3]]=stats[i].checked;
+                }
+                localStorage.setItem("sets",JSON.stringify(sets));
+                //localStorage.setItem("dark",JSON.stringify(document.getElementById("dark").checked));
+                alert("Settings saved!");
+                location.reload();
+            }
+            
+            const del=()=> {
+                let d=window.confirm("Are you sure you want to delete all data?");
+                if (d) {
+                    localStorage.clear();
+                    alert("Data cleared");
+                    window.location.href="./opening.html";
+                }
+            }
+        </script>
+    </head>
+    <body>
+        <h1>Settings</h1>
+        <h3>Stats</h3>
+        <p>Edit which statistics are displayed</p>
+        <div id="stats"></div>
+        <!--<h3>Visuals</h3>
+        <p>Change the visual settings</p>
+        <input type="checkbox" id="dark" name="dark">
+        <label for="dark">Dark mode</label>-->
+        <button onclick="window.location.href='./categories.html'">Category Settings</button>
+        <button onclick="del()">Delete all data</button>
+        <button onclick="save()">Save</button>
+        <button onclick="window.location.href='./index.html'">Back</button>
+    </body>
+</html>

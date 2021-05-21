@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Entering Scores</title>
+  <link rel="stylesheet" href="style.css" id="sty">
+<script>
+    window.onload=()=>{
+        let menu=document.getElementById("menu");
+        let cats=JSON.parse(localStorage.getItem("cats"));
+        cats.forEach((x)=> {
+            let a=document.createElement("option");
+            a.value=x;
+            a.innerHTML=x;
+            menu.appendChild(a);
+        });
+        let table=document.getElementById("table");
+        let head=table.insertRow();
+        head.style.cssText="font-weight:bold;";
+        let inp=table.insertRow();
+        let score=table.insertRow();
+        let c=document.createElement("input");
+        c.type="text";
+        c.maxLength="1";
+        c.style.cssText="width:9px;";
+        for (let i=0; i<10; i++) {
+            let h1=head.insertCell();
+            h1.innerHTML=i+1;
+            h1.colSpan="2";
+            let c1=inp.insertCell().appendChild(c.cloneNode(true));
+            let c2=inp.insertCell().appendChild(c.cloneNode(true));
+            score.insertCell().colSpan="2";
+        }
+        table.rows[0].cells[9].colSpan="3";
+        let c10=inp.insertCell().appendChild(c.cloneNode(true));
+        table.rows[2].cells[9].colSpan="3";
+        table.rows[2].cells[9].id="f10";
+    }
+
+  const mainFunc = () => {
+    //init
+    let table=document.getElementById("table");
+    let scores=table.rows[1].cells;
+    let totals=table.rows[2].cells;
+    let a=0;
+    let b=0;
+    let totals2=[a, b];
+    let strike1=false;
+    let strike2=false;
+    let spare=false;
+    let amtStrike=0;
+    let amtSpare=0;
+    let firstBall=0;
+    let extras=0;
+    
+    for (let i=0;i<scores.length;i++) scores[i].firstChild.value=scores[i].firstChild.value.toUpperCase();
+    
+    for (let i=0; i<9; i++) {
+      let x=scores[i*2].firstChild.value;
+      let y=scores[i*2+1].firstChild.value;
+      if (y=="-" || y=="F") y=0;
+      if (x=="X") {
+        totals[i].innerHTML=10;
+        if (strike1) {
+          if (strike2) {
+            totals2[i]+=10;
+            totals2[i+1]+=10;
+          }//if second-to-last
+          else strike2=true;
+          totals2[i+1]+=10;
+        }//if last
+        else strike1=true;
+        if (spare) totals2[i+1]+=10;
+        firstBall+=10;
+        amtStrike+=1;
+        spare=false;
+      }//if strike
+      
+      else {
+        if (x=="-" || x=="F") x=0;
+        x=Number(x);
+        if (spare) totals2[i+1]+=x;
+        firstBall+=Number(x);
+        if (y=="/" || Number(x)+Number(y)>=10) {
+          scores[i*2+1].firstChild.value="/";
+          spare=true;
+          amtSpare+=1;
+          totals[i].innerHTML=10;
+        }//if spare
+        else {
+          y=Number(y);
+          totals[i].innerHTML = Number(x) + Number(y);
+          spare=false;
+        }//if no mark
+        if (strike1) {
+          if (strike2) {
+            totals2[i]+=x;
+            totals2[i+1]+=x;
+          }//if second-to-last
+          if (y=="/" || Number(x)+Number(y)>=10) {
+              totals2[i+1]+=10;
+              scores[i*2+1].firstChild.value="/";
+          }
+          else totals2[i+1]+=Number(y)+Number(x);
+        }//if was strike
+        strike1=false;
+        strike2=false;
+      }//if not strike
+      totals[i].innerHTML = Number(totals[i].innerHTML) + Number(totals2[i + 1]);
+      totals2.push(Number(totals[i].innerHTML));
+    }//first 9 frames
+    
+    //10th frame
+    totals2.push(0);
+    x=scores[18].firstChild.value;
+    if (x=="X") {
+      amtStrike+=1;
+      firstBall+=10;
+      extras+=1;
+      totals2[11]=10;
+      if (strike1) {
+        if (strike2) {
+          totals2[10]+=10;
+          totals2[9]+=10;
+        }//if also was strike
+        totals2[10]+=10;
+      }//if was strike
+      if (spare) totals2[10]+=10; //ADD SPARE
+      
+      x=scores[19].firstChild.value;
+      if (x=="X") {
+        amtStrike+=1;
+        firstBall+=10;
+        extras+=1;
+        if (strike2) totals2[10]+=10;
+        totals2[11]+=10;
+        x=scores[20].firstChild.value;
+        if (x=="X") {
+          x=10;
+          amtStrike+=1;
+        }//if third strike
+        if (x=="-" || x=="F") x=0;
+        totals2[11]+=Number(x); //ADD NUMBER
+        firstBall+=Number(x);
+      }//if second strike
+      else {
+        if (x=="-" || x=="F") x=0;
+        firstBall+=Number(x);
+        y=scores[20].firstChild.value;
+        if (y=="/" || Number(x)+Number(y)>=10) {
+          y=10-x;
+          scores[20].firstChild.value="/";
+          amtSpare+=1;
+        }//if spare
+        if (y=="-" || y=="F") y=0;
+        if (strike2) totals2[10]+=Number(x);
+        totals2[11]+=Number(x)+Number(y);
+      }//if no second strike
+    }//if first strike
+    
+    else {
+      if (x=="-" || x=="F") x=0;
+      firstBall+=Number(x);
+      y=scores[19].firstChild.value;
+      if (spare) totals2[10]+=Number(x);
+      if (strike1) {
+        if (strike2) {
+          totals2[10]+=Number(x);
+          totals2[9]+=Number(x);
+        }//if also was strike
+        if (y=="/" || Number(x)+Number(y)>=10) {
+            totals2[10]+=10;
+            scores[19].firstChild.value="/";
+        }
+        else totals2[10]+=Number(y)+Number(x);
+      }//if was strike
+      if (y=="-" || y=="F") y=0;
+      if (y=="/" || Number(x)+Number(y)>=10) {
+        scores[19].firstChild.value="/";
+        amtSpare+=1;
+        extras+=1;
+        totals2[11]=10;
+        x=scores[20].firstChild.value;
+        if (x=="X") {
+          x=10;
+          amtStrike+=1;
+        }//if strike
+        if (x=="-" || x=="F") x=0;
+        totals2[11]+=Number(x);
+        firstBall+=Number(x);
+      }//if is spare
+      else totals2[11]=Number(x)+Number(y);
+    }//if isn't strike
+    totals2[11]=Number(totals2[11])+Number(totals2[10]);
+    
+    if (!totals2[11] && totals2[11]!=0) {
+        document.getElementById("Strikes").innerHTML="No valid score";
+        document.getElementById("Strikes").style.cssText="color:red;";
+        for (let i=0;i<10;i++) totals[i].innerHTML="";
+        return;
+    }//if incorrect
+    
+    let sets=JSON.parse(localStorage.getItem("sets"));
+    for (let i=2; i<=11; i++) totals[i-2].innerHTML=totals2[i];
+    if (sets["strike"]) document.getElementById("Strikes").innerHTML = `Strikes: ${amtStrike}`;
+    if (sets["spare"]) document.getElementById("Spares").innerHTML = `Spares: ${amtSpare}`;
+    let avg=Math.round((firstBall*100)/(10+extras))/100;
+    if (sets["firstBall"]) document.getElementById("First Ball").innerHTML = `Average first ball: ${avg}`;
+    
+    if (!sets["strike"]) document.getElementById("Strikes").style.cssText="display:none;";
+    
+    let menu=document.getElementById("menu");
+    
+    let date = new Date();
+    let today=`${date.getMonth()+1}/${date.getDate()}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+    let obj={
+      strikes:amtStrike,
+      spares:amtSpare,
+      firstBall:avg,
+      score:totals2[11],
+      date:today,
+      more:extras,
+      full:true,
+      cat:menu.value
+    }//obj
+    
+    document.getElementById("calc").style.cssText="display:none;";
+    document.getElementById("restart").value="Enter another game";
+    
+    let objs=JSON.parse(localStorage.getItem("objs"));
+    if (objs.length>=150) {
+        alert("Max games exceeded. Delete older games in order to make space.");
+        return;
+    }
+    objs.push(obj);
+    localStorage.setItem("objs",JSON.stringify(objs));
+    if (objs.length==150) alert("Max games reached");
+    
+    let avgTot=0;
+    for (let i=0; i<objs.length; i++) avgTot+=objs[i].score;
+    avgTot=Math.round((avgTot/objs.length)*100)/100;
+    let avgArr=JSON.parse(localStorage.getItem("avgs"));
+    avgArr.push(avgTot);
+    if (avgArr.length>150) avgArr.splice(0,1);
+    localStorage.setItem("avgs",JSON.stringify(avgArr));
+  }//mainFunc
+  
+  const exit=(loc)=> {
+      let leave;
+      if (document.getElementById("f10").innerHTML!="") leave=true;
+      else leave=window.confirm("Are you sure you want to leave? Any uncalculated game will be lost.");
+      if (leave) window.location.href=loc;
+  }//exit
+</script>
+</head>
+<body>
+  <h1>Enter a Game</h1>
+  <table id="table"></table>
+  <p id="Strikes"></p>
+  <p id="Spares"></p>
+  <p id="First Ball"></p>
+    <label for="menu">Category</label>
+    <select name="menu" id="menu">
+        <option value="None">None</option>
+    </select>
+  <input type="button" onclick="location.reload()" id="restart" value="Restart" class="b">
+  <button type="button" onclick="mainFunc()" id="calc">Calculate</button>
+  <button type="button" onclick="exit('./game.html')">Enter a score</button>
+  <button type="button" onclick="exit('./index.html')">Back</button>
+</body>
+</html>
